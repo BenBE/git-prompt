@@ -328,10 +328,39 @@ __git_ps2() {
 
 }
 
+__git_ps2_pwdmarkup() {
+	if [[ 0 == $1 ]]; then
+		echo "`pwd`"
+		return
+	fi
+
+	local color_default="\033[0m"
+	local color_blue="\033[01;34m"
+	local color_cyan="\033[01;36m"
+
+	local repo_info_gitdir=$(__gitdir)
+	if [[ -z "${repo_info_gitdir}" ]]; then
+		local path_wc=`pwd`
+		local path_rel=""
+	else
+		local repo_info_top=`git rev-parse --show-toplevel 2>/dev/null`
+
+		local path_wc=${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"}	#`"
+		local path_rel=`pwd`
+		path_rel=${path_rel#${path_wc}}
+	fi
+
+	[[ 0 == $1 ]] || echo -ne $color_blue
+	echo -n "${path_wc}"
+
+	[[ 0 == $1 ]] || echo -ne $color_cyan
+	echo -n "${path_rel}"
+}
+
 if [ "$color_prompt" = yes ]; then
 	UIDCOLOR=32
 	[[ 0 == $UID ]] && UIDCOLOR=31
-	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;'${UIDCOLOR}'m\]\u@\h\[\033[0m\]:\[\033[01;34m\]\w\[\0337\]$(__git_ps2 0)\[\0338$(__git_ps2 1)\]\[\033[0m\]\$ '
+	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;'${UIDCOLOR}'m\]\u@\h\[\033[0m\]:\[\0337\]$(__git_ps2_pwdmarkup 0)$(__git_ps2 0)\[\0338$(__git_ps2_pwdmarkup 1)$(__git_ps2 1)\]\[\033[0m\]\$ '
 else
 	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(__git_ps2 0)\$ '
 fi
