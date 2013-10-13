@@ -40,19 +40,19 @@ fi
 __gitdir() {
 	if [ -z "${1-}" ]; then
 		if [ -n "${__git_dir-}" ]; then
-			echo "${__git_dir}"
+			printf %s "${__git_dir}"
 		elif [ -n "${GIT_DIR-}" ]; then
 			test -d "${GIT_DIR-}" || return 1
-			echo "$GIT_DIR"
+			printf %s "$GIT_DIR"
 		elif [ -d .git ]; then
-			echo .git
+			printf %s .git
 		else
 			git rev-parse --git-dir 2>/dev/null
 		fi
 	elif [ -d "$1/.git" ]; then
-		echo "$1/.git"
+		printf %s "$1/.git"
 	else
-		echo "$1"
+		printf %s "$1"
 	fi
 }
 
@@ -67,25 +67,25 @@ __git_ps2_upstream() {
 __git_ps2_upstream_repo() {
 	for a in `git remote show 2>/dev/null|sort -ur`; do
 		if [[ `__git_ps2_upstream` == $a/* ]]; then
-			echo $a
+			printf %s "$a"
 			return
 		fi
 	done
 }
 
 __git_ps2_upstream_revdelta() {
-	echo `git rev-list --count --left-right $(__git_ps2_upstream)...HEAD 2>/dev/null`
+	printf "%d %d" `git rev-list --count --left-right $(__git_ps2_upstream)...HEAD 2>/dev/null`
 }
 
 __git_ps2_diffstat() {
 	if [[ "$1" == "" ]]; then
-		echo -n 0 0 0
+		printf "%d %d %d" 0 0 0
 	elif [[ "$2" == "" ]]; then
-		echo -n "$1" 0 0
+		printf "%d %d %d" "$1" 0 0
 	elif [[ "$3" == deletion* ]]; then
-		echo -n "$1" 0 "$2"
+		printf "%d %d %d" "$1" 0 "$2"
 	else
-		echo -n "$1" "$2" "$4"
+		printf "%d %d %d" "$1" "$2" "$4"
 	fi
 }
 
@@ -150,13 +150,13 @@ __git_ps2() {
 #	fi
 	if [[ "0 0 0" != "$STAT_S" ]]; then
 		# staged changes
-		git_wc_state=${color_red}
+		git_wc_state="${color_red}"
 	elif [[ "0 0 0" != "$STAT_U" ]]; then
 		# unstaged changes
-		git_wc_state=${color_yellow}
+		git_wc_state="${color_yellow}"
 	else
 		# no changes
-		git_wc_state=${color_green}
+		git_wc_state="${color_green}"
 	fi
 
 	local git_us_repo=$(__git_ps2_upstream_repo)
@@ -234,96 +234,96 @@ __git_ps2() {
 
 	# Output the prompt
 
-	[[ 0 == $1 ]] || echo -ne $color_white
-	echo -n " ("
+	[[ 0 == $1 ]] || printf %b "$color_white"
+	printf %s " ("
 
-	[[ 0 == $1 ]] || echo -ne $git_wc_state
-	echo -n $git_wc_branch
+	[[ 0 == $1 ]] || printf %b "$git_wc_state"
+	printf %s "$git_wc_branch"
 
 	if [[ "true" == $repo_info_isbare ]] || [[ "true" == $repo_info_isgitdir ]]; then
-		[[ 0 == $1 ]] || echo -ne $color_white
-		echo -n ":"
+		[[ 0 == $1 ]] || printf %b "$color_white"
+		printf %s ":"
 		if [[ "true" == $repo_info_isbare ]]; then
-			echo -n "BARE"
+			printf %s "BARE"
 		elif [[ "true" == $repo_info_isgitdir ]]; then
-			echo -n "GIT_DIR"
+			printf %s "GIT_DIR"
 		else
-			echo -n "UNKNOWN"
+			printf %s "UNKNOWN"
 		fi
 	fi
 
 	if ! [[ -z "$git_us_repo" ]]; then
-		[[ 0 == $1 ]] || echo -ne $color_white
-		echo -n "["
-		[[ 0 == $1 ]] || echo -ne $color_green
-		echo -n $git_us_repo
-		[[ 0 == $1 ]] || echo -ne $color_white
-		case $git_us_delta in
+		[[ 0 == $1 ]] || printf %b "$color_white"
+		printf %s "["
+		[[ 0 == $1 ]] || printf %b "$color_green"
+		printf %s "$git_us_repo"
+		[[ 0 == $1 ]] || printf %b "$color_white"
+		case "$git_us_delta" in
 			"0 0")
 				;;
 			"0 "*)
-				printf "`printf ":L+%s%%d" "$color_green"`" ${git_us_delta#0 }
+				printf "`printf ":L+%b%%d" "$color_green"`" ${git_us_delta#0 }
 				;;
 			*" 0")
-				printf "`printf ":R+%s%%d%s" "$color_red"`" ${git_us_delta% 0}
+				printf "`printf ":R+%b%%d" "$color_red"`" ${git_us_delta% 0}
 				;;
 			*)
-				printf "`printf ":R+%s%%d%s,L+%s%%d" "$color_red" "$color_white" "$color_green"`" $git_us_delta
+				printf "`printf ":R+%b%%d%b,L+%b%%d" "$color_red" "$color_white" "$color_green"`" $git_us_delta
 				;;
 		esac
-		[[ 0 == $1 ]] || echo -ne $color_white
-		echo -n "]"
+		[[ 0 == $1 ]] || printf %b "$color_white"
+		printf %s "]"
 	fi
 
 	if ! [[ -z "$git_op_flags" ]]; then
-		[[ 0 == $1 ]] || echo -ne $color_white
-		echo -n '|'
-		[[ 0 == $1 ]] || echo -ne $color_yellow
-		echo -n $git_op_flags
+		[[ 0 == $1 ]] || printf %b "$color_white"
+		printf %s '|'
+		[[ 0 == $1 ]] || printf %b "$color_yellow"
+		printf %s "$git_op_flags"
 		if [ -n "$git_op_curr" ] && [ -n "$git_op_total" ]; then
-			[[ 0 == $1 ]] || echo -ne $color_white
-			echo -n ' {'
-			[[ 0 == $1 ]] || echo -ne $color_yellow
-			echo -n $git_op_curr
-			[[ 0 == $1 ]] || echo -ne $color_white
-			echo -n '/'
-			[[ 0 == $1 ]] || echo -ne $color_yellow
-			echo -n $git_op_total
-			[[ 0 == $1 ]] || echo -ne $color_white
-			echo -n '}'
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s ' {'
+			[[ 0 == $1 ]] || printf %b "$color_yellow"
+			printf %s "$git_op_curr"
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s '/'
+			[[ 0 == $1 ]] || printf %b "$color_yellow"
+			printf %s "$git_op_total"
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s '}'
 		fi
 	fi
 
-	[[ 0 == $1 ]] || echo -ne $color_white
-	echo -n ")"
+	[[ 0 == $1 ]] || printf %b "$color_white"
+	printf %s ")"
 
 	if [ "$STAT_U" != "0 0 0" -o "$STAT_S" != "0 0 0" ]; then
-		[[ 0 == $1 ]] || echo -ne $color_white
-		echo -n '@'
-		case $STAT_C in
+		[[ 0 == $1 ]] || printf %b "$color_white"
+		printf %s '@'
+		case "$STAT_C" in
 			0)
 				;;
 			1)
-				[[ 0 == $1 ]] || echo -ne $color_red
-				echo -n '!'
+				[[ 0 == $1 ]] || printf %b "$color_red"
+				printf %s '!'
 				;;
 			2)
-				[[ 0 == $1 ]] || echo -ne $color_red
-				echo -n '!!'
+				[[ 0 == $1 ]] || printf %b "$color_red"
+				printf %s '!!'
 				;;
 			*)
-				[[ 0 == $1 ]] || echo -ne $color_red
-				echo -n '!'$STAT_C'!'
+				[[ 0 == $1 ]] || printf %b "$color_red"
+				printf %s '!'"$STAT_C"'!'
 		esac
-		[[ 0 == $1 ]] || echo -ne $color_white
-		echo -n '['
-		printf "`printf 'T:%s%%d%s{%s+%%d%s/%s-%%d%s}' "$color_yellow" "$color_white" "$color_green" "$color_white" "$color_red" "$color_white"`" $STAT_U
+		[[ 0 == $1 ]] || printf %b "$color_white"
+		printf %s '['
+		printf "`printf 'T:%b%%d%b{%b+%%d%b/%b-%%d%b}' "$color_yellow" "$color_white" "$color_green" "$color_white" "$color_red" "$color_white"`" $STAT_U
 
 		if [ "$STAT_S" != "0 0 0" ]; then
-			echo -n ' '
-			printf "`printf 'S:%s%%d%s{%s+%%d%s/%s-%%d%s}' "$color_yellow" "$color_white" "$color_green" "$color_white" "$color_red" "$color_white"`" $STAT_S
+			printf %s ' '
+			printf "`printf 'S:%b%%d%b{%b+%%d%b/%b-%%d%b}' "$color_yellow" "$color_white" "$color_green" "$color_white" "$color_red" "$color_white"`" $STAT_S
 		fi
-		echo -ne ']'
+		printf %s ']'
 	fi
 
 }
@@ -332,15 +332,15 @@ __git_ps2_pwdtilde() {
 	local homedir=${HOME:-}
 	homedir=${homedir%%/}
 	if [[ -z "${homedir}" ]]; then
-		echo -n "$1"
+		printf %s "$1"
 	else
-		echo -n "${1/#$homedir/~}"
+		printf %s "${1/#$homedir/~}"
 	fi
 }
 
 __git_ps2_pwdmarkup() {
 	if [[ 0 == $1 ]]; then
-		echo $(__git_ps2_pwdtilde "`pwd`")
+		printf %s "$(__git_ps2_pwdtilde "`pwd`")"
 		return
 	fi
 
@@ -348,7 +348,7 @@ __git_ps2_pwdmarkup() {
 	local color_blue="\033[01;34m"
 	local color_cyan="\033[01;36m"
 
-	local repo_info_gitdir=$(__gitdir)
+	local repo_info_gitdir="$(__gitdir)"
 	if [[ -z "${repo_info_gitdir}" ]]; then
 		local path_wc=`pwd`
 		local path_rel=""
@@ -360,11 +360,11 @@ __git_ps2_pwdmarkup() {
 		path_rel=${path_rel#${path_wc}}
 	fi
 
-	[[ 0 == $1 ]] || echo -ne $color_blue
-	echo -n $(__git_ps2_pwdtilde "${path_wc}")
+	[[ 0 == $1 ]] || printf %b "$color_blue"
+	printf %s "$(__git_ps2_pwdtilde "${path_wc}")"
 
-	[[ 0 == $1 ]] || echo -ne $color_cyan
-	echo -n "${path_rel}"
+	[[ 0 == $1 ]] || printf %b "$color_cyan"
+	printf %s "${path_rel}"
 }
 
 if [ "$color_prompt" = yes ]; then
