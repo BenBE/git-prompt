@@ -328,9 +328,19 @@ __git_ps2() {
 
 }
 
+__git_ps2_pwdtilde() {
+	local homedir=${HOME:-}
+	homedir=${homedir%%/}
+	if [[ -z "${homedir}" ]]; then
+		echo -n "$1"
+	else
+		echo -n "${1/#$homedir/~}"
+	fi
+}
+
 __git_ps2_pwdmarkup() {
 	if [[ 0 == $1 ]]; then
-		echo "`pwd`"
+		echo $(__git_ps2_pwdtilde "`pwd`")
 		return
 	fi
 
@@ -351,7 +361,7 @@ __git_ps2_pwdmarkup() {
 	fi
 
 	[[ 0 == $1 ]] || echo -ne $color_blue
-	echo -n "${path_wc}"
+	echo -n $(__git_ps2_pwdtilde "${path_wc}")
 
 	[[ 0 == $1 ]] || echo -ne $color_cyan
 	echo -n "${path_rel}"
