@@ -18,7 +18,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+    xterm-color|cygwin) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -96,10 +96,10 @@ __git_ps2() {
 
 	if [[ $1 -ne 0 ]]; then
 		local color_default="\033[0m"
-		local color_red="\033[01;31m"
-		local color_yellow="\033[01;33m"
-		local color_green="\033[01;32m"
-		local color_white="\033[01;37m"
+		local color_red="\033[1;31m"
+		local color_yellow="\033[1;33m"
+		local color_green="\033[1;32m"
+		local color_white="\033[1;37m"
 	else
 		local color_default=""
 		local color_red=""
@@ -345,8 +345,8 @@ __git_ps2_pwdmarkup() {
 	fi
 
 	local color_default="\033[0m"
-	local color_blue="\033[01;34m"
-	local color_cyan="\033[01;36m"
+	local color_blue="\033[1;34m"
+	local color_cyan="\033[1;36m"
 
 	local repo_info_gitdir="$(__gitdir)"
 	if [[ -z "${repo_info_gitdir}" ]]; then
