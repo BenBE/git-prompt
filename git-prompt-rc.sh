@@ -137,6 +137,7 @@ __git_ps2() {
 
 	STAT_S=$(__git_ps2_diffstat $STAT_S)
 	STAT_U=$(__git_ps2_diffstat $STAT_U)
+	STAT_C=$(printf "%d" ${STAT_C})
 
 #	if ! git diff --no-ext-diff --quiet --cached --exit-code 2>/dev/null; then
 #		# staged changes
