@@ -126,14 +126,14 @@ __git_ps2() {
 	local STAT_U=""
 
 	if [[ "false" == "$repo_info_isbare" ]] && [[ "false" == "$repo_info_iswc" ]]; then
-		cd ${repo_info_gitdir}/..
+		cd "${repo_info_gitdir}/.."
 	fi
 
 	STAT_S=`git diff --cached --stat 2>/dev/null|tail -1|awk '{print $1" "$4" "$5" "$6" "$7}'`
 	STAT_U=`git diff --stat 2>/dev/null|tail -1|awk '{print  $1" "$4" "$5" "$6" "$7}'`
 	STAT_C=`git diff --name-only --diff-filter=U 2>/dev/null|wc -l`
 
-	[[ -z ${path_current} ]] || cd ${path_current}
+	[[ -z ${path_current} ]] || cd "${path_current}"
 
 	STAT_S=$(__git_ps2_diffstat $STAT_S)
 	STAT_U=$(__git_ps2_diffstat $STAT_U)
