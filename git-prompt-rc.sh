@@ -339,6 +339,17 @@ __git_ps2_pwdtilde() {
 	fi
 }
 
+__git_ps2_pwdfixup() {
+    if [ "/?:/*"=="$1" ]; then
+        local drv="$1"
+        local dir="$1"
+        printf /%s/%s "$(echo "${drv:1:1}" | tr 'A-Z' 'a-z'  )" "${dir:3}"
+        return
+    fi
+
+    printf %s "$1"
+}
+
 __git_ps2_pwdmarkup() {
 	if [[ 0 == $1 ]]; then
 		printf %s "$(__git_ps2_pwdtilde "`pwd`")"
@@ -355,9 +366,10 @@ __git_ps2_pwdmarkup() {
 		local path_rel=""
 	else
 		local repo_info_top=`git rev-parse --show-toplevel 2>/dev/null`
-
-		local path_wc=${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"}	#`"
-		local path_rel=`pwd`
+		repo_info_top="/${repo_info_top/:/}"
+		repo_info_top=${repo_info_top/\/\//\/}
+		local path_wc=$(__git_ps2_pwdfixup ${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"})	#`"
+		local path_rel=$(__git_ps2_pwdfixup `pwd`)
 		path_rel=${path_rel#${path_wc}}
 	fi
 
