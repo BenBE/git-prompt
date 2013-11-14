@@ -380,7 +380,7 @@ __git_ps2_pwdmarkup() {
 	printf %s "${path_rel}"
 }
 
-if [ "$color_prompt" = yes ]; then
+if [[ "$color_prompt"=="yes" ]]; then
 	UIDCOLOR=32
 	[[ 0 == $UID ]] && UIDCOLOR=31
 	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;'${UIDCOLOR}'m\]\u@\h\[\033[0m\]:\[\0337\]$(__git_ps2_pwdmarkup 0)$(__git_ps2 0)\[\0338$(__git_ps2_pwdmarkup 1)$(__git_ps2 1)\]\[\033[0m\]\$ '
