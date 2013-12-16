@@ -256,7 +256,11 @@ __git_ps2() {
 	if ! [[ -z "$git_us_repo" ]]; then
 		[[ 0 == $1 ]] || printf %b "$color_white"
 		printf %s "["
-		[[ 0 == $1 ]] || printf %b "$color_green"
+		if [[ "$git_us_repo/$git_wc_branch" == "$(__git_ps2_upstream)" ]]; then
+			[[ 0 == $1 ]] || printf %b "$color_green"
+		else
+			[[ 0 == $1 ]] || printf %b "$color_yellow"
+		fi
 		printf %s "$git_us_repo"
 		[[ 0 == $1 ]] || printf %b "$color_white"
 		case "$git_us_delta" in
