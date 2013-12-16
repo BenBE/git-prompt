@@ -241,12 +241,12 @@ __git_ps2() {
 	[[ 0 == $1 ]] || printf %b "$git_wc_state"
 	printf %s "$git_wc_branch"
 
-	if [[ "true" == $repo_info_isbare ]] || [[ "true" == $repo_info_isgitdir ]]; then
+	if [[ "true" == "$repo_info_isbare" ]] || [[ "true" == "$repo_info_isgitdir" ]]; then
 		[[ 0 == $1 ]] || printf %b "$color_white"
 		printf %s ":"
-		if [[ "true" == $repo_info_isbare ]]; then
+		if [[ "true" == "$repo_info_isbare" ]]; then
 			printf %s "BARE"
-		elif [[ "true" == $repo_info_isgitdir ]]; then
+		elif [[ "true" == "$repo_info_isgitdir" ]]; then
 			printf %s "GIT_DIR"
 		else
 			printf %s "UNKNOWN"
