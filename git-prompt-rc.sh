@@ -344,7 +344,7 @@ __git_ps2_pwdtilde() {
 }
 
 __git_ps2_pwdfixup() {
-    if [ "/?:/*"=="$1" ]; then
+    if [ "/?:/*" == "$1" ]; then
         local drv="$1"
         local dir="$1"
         printf /%s/%s "$(echo "${drv:1:1}" | tr 'A-Z' 'a-z'  )" "${dir:3}"
