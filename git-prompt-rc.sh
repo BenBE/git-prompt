@@ -99,12 +99,16 @@ __git_ps2() {
 		local color_red="\033[1;31m"
 		local color_yellow="\033[1;33m"
 		local color_green="\033[1;32m"
+		local color_cyan="\033[1;36m"
+		local color_blue="\033[1;34m"
 		local color_white="\033[1;37m"
 	else
 		local color_default=""
 		local color_red=""
 		local color_yellow=""
 		local color_green=""
+		local color_cyan=""
+		local color_blue=""
 		local color_white=""
 	fi
 
@@ -198,6 +202,26 @@ __git_ps2() {
 			git_op_flags="REVERT"
 		elif [ -f "$repo_info_gitdir/BISECT_LOG" ]; then
 			git_op_flags="BISECT"
+
+			read git_wc_branch 2>/dev/null <"$repo_info_gitdir/BISECT_START"
+
+			local git_bs_commit=""
+			local git_bs_total=""
+			local git_bs_good=""
+			local git_bs_bad=""
+			local git_bs_steps=""
+
+			for git_bs_tmp in `git rev-list --bisect --bisect-vars 2>/dev/null`; do
+				git_bs_tmp_name="$(echo "$git_bs_tmp"|cut -d= -f1)"
+				git_bs_tmp_value="$(echo "$git_bs_tmp"|cut -d= -f2)"
+				case ${git_bs_tmp_name} in
+					bisect_rev)	git_bs_commit=$(echo "$git_bs_tmp_value"|cut -c 2-8)	;;
+					bisect_all)	git_bs_total="$git_bs_tmp_value"			;;
+					bisect_good)	git_bs_good="$git_bs_tmp_value"				;;
+					bisect_bad)	git_bs_bad="$git_bs_tmp_value"				;;
+					bisect_steps)	git_bs_steps="$git_bs_tmp_value"			;;
+				esac
+			done
 		fi
 
 		if [ -n "$git_wc_branch" ]; then
@@ -285,6 +309,7 @@ __git_ps2() {
 		printf %s '|'
 		[[ 0 == $1 ]] || printf %b "$color_yellow"
 		printf %s "$git_op_flags"
+
 		if [ -n "$git_op_curr" ] && [ -n "$git_op_total" ]; then
 			[[ 0 == $1 ]] || printf %b "$color_white"
 			printf %s ' {'
@@ -294,6 +319,29 @@ __git_ps2() {
 			printf %s '/'
 			[[ 0 == $1 ]] || printf %b "$color_yellow"
 			printf %s "$git_op_total"
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s '}'
+		elif [ -n "$git_bs_total" ] && [ -n "$git_bs_steps" ] && [ -n "$git_bs_good" ] && [ -n "$git_bs_bad" ] && [ -n "$git_bs_commit" ]; then
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s ' {S:'
+			[[ 0 == $1 ]] || printf %b "$color_cyan"
+			printf %s "$git_bs_steps"
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s ', '
+			[[ 0 == $1 ]] || printf %b "$color_green"
+			printf %s "$git_bs_good"
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s '+'
+			[[ 0 == $1 ]] || printf %b "$color_red"
+			printf %s "$git_bs_bad"
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s '/'
+			[[ 0 == $1 ]] || printf %b "$color_yellow"
+			printf %s "$git_bs_total"
+			[[ 0 == $1 ]] || printf %b "$color_white"
+			printf %s ' @ '
+			[[ 0 == $1 ]] || printf %b "$color_green"
+			printf %s "$git_bs_commit"
 			[[ 0 == $1 ]] || printf %b "$color_white"
 			printf %s '}'
 		fi
