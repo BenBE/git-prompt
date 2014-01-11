@@ -222,6 +222,13 @@ __git_ps2() {
 					bisect_steps)	git_bs_steps="$git_bs_tmp_value"			;;
 				esac
 			done
+
+			if [ "${git_bs_good}0" -lt 0 ]; then
+				git_bs_good=0
+			fi
+			if [ "${git_bs_bad}0" -lt 0 ]; then
+				git_bs_bad=0
+			fi
 		fi
 
 		if [ -n "$git_wc_branch" ]; then
