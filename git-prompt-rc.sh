@@ -249,7 +249,7 @@ __git_ps2() {
 							git describe HEAD ;;
 						(* | default)
 							git describe --tags --exact-match HEAD ;;
-					esac 2>/dev/null)" || git_wc_branch="$short_sha..."
+					esac 2>/dev/null)" || git_wc_branch="@$(git rev-parse HEAD| cut -c 1-7)..."
 				git_wc_branch="($git_wc_branch)"
 			fi
 		fi
