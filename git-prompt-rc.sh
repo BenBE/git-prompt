@@ -420,6 +420,9 @@ __git_ps2_pwdmarkup() {
 		local path_rel=""
 	else
 		local repo_info_top=`git rev-parse --show-toplevel 2>/dev/null`
+		if [[ -z "" ]]; then
+			repo_info_top="$(realpath "$repo_info_gitdir/..")"
+		fi
 		repo_info_top="/${repo_info_top/:/}"
 		repo_info_top=${repo_info_top/\/\///}
 		local path_wc=$(__git_ps2_pwdfixup ${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"})	#`"
