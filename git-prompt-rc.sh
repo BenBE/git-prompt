@@ -394,7 +394,7 @@ __git_ps2_pwdtilde() {
 	if [[ -z "${homedir}" ]]; then
 		printf %s "$1"
 	else
-		printf %s "${1/#$homedir/~}"
+		printf %s "${1/#$homedir/\~}"
 	fi
 }
 
