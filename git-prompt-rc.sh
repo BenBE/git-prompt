@@ -423,18 +423,18 @@ __git_ps2_pwdmarkup() {
 
 	local repo_info_gitdir="$(__gitdir)"
 	if [[ -z "${repo_info_gitdir}" ]]; then
-		local path_wc=`pwd`
+		local path_wc="$(pwd)"
 		local path_rel=""
 	else
-		local repo_info_top=`git rev-parse --show-toplevel 2>/dev/null`
+		local repo_info_top="$(git rev-parse --show-toplevel 2>/dev/null)"
 		if [[ -z "" ]]; then
 			repo_info_top="$(realpath "$repo_info_gitdir/..")"
 		fi
 		repo_info_top="/${repo_info_top/:/}"
-		repo_info_top=${repo_info_top/\/\///}
-		local path_wc=$(__git_ps2_pwdfixup ${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"})	#`"
-		local path_rel=$(__git_ps2_pwdfixup `pwd`)
-		path_rel=${path_rel#${path_wc}}
+		repo_info_top="${repo_info_top/\/\///}"
+		local path_wc="$(__git_ps2_pwdfixup ${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"})"
+		local path_rel="$(__git_ps2_pwdfixup "`pwd`")"
+		path_rel="${path_rel#${path_wc}}"
 	fi
 
 	[[ 0 == $1 ]] || printf %b "$color_blue"
