@@ -419,29 +419,44 @@ __git_ps2_pwdmarkup() {
 
 	local color_default="\033[0m"
 	local color_blue="\033[1;34m"
+	local color_darkcyan="\033[0;36m"
 	local color_cyan="\033[1;36m"
 
 	local repo_info_gitdir="$(__gitdir)"
 	if [[ -z "${repo_info_gitdir}" ]]; then
 		local path_wc="$(pwd)"
+		local path_mod=""
 		local path_rel=""
 	else
 		local repo_info_top="$(git rev-parse --show-toplevel 2>/dev/null)"
 		if [[ -z "" ]]; then
-			repo_info_top="$(realpath "$repo_info_gitdir/..")"
+			repo_info_top="$(realpath "${repo_info_gitdir%%/.git}")"
 		fi
 		repo_info_top="/${repo_info_top/:/}"
 		repo_info_top="${repo_info_top/\/\///}"
+
 		local path_wc="$(__git_ps2_pwdfixup ${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"})"
+		path_wc="${path_wc%%/.git/**}"
+		path_wc="${path_wc%%/.git}"
+
+		local path_mod="${repo_info_top##${path_wc}}"
+		path_mod="${path_mod##/.git/modules}"
+		path_mod="${path_mod##/.git}"
+
 		local path_rel="$(__git_ps2_pwdfixup "`pwd`")"
-		path_rel="${path_rel#${path_wc}}"
+		path_rel="${path_rel#${path_wc}${path_mod}}"
 	fi
 
 	[[ 0 == $1 ]] || printf %b "$color_blue"
 	printf %s "$(__git_ps2_pwdtilde "${path_wc}")"
 
+	[[ 0 == $1 ]] || printf %b "$color_darkcyan"
+	printf %s "${path_mod}"
+
 	[[ 0 == $1 ]] || printf %b "$color_cyan"
 	printf %s "${path_rel}"
+
+	[[ 0 == $1 ]] || printf %b "$color_default"
 }
 
 if [[ "$color_prompt"=="yes" ]]; then
