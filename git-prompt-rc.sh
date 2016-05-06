@@ -399,16 +399,17 @@ __git_ps2_pwdtilde() {
 }
 
 __git_ps2_pwdfixup() {
-    local mydir="$(printf '/%s' "${1}")"
+    local mydir="$(printf '%s' "${1}")"
     mydir="${mydir/\/\///}"
-    if [[ "$mydir" == /?:/* ]] || [[ "$mydir" == /?/* ]]; then
-        local drv="${mydir:1:1}"
+    if [[ ":$mydir" == :?:/* ]]; then
+        mydir="${mydir}"
+        local drv="${mydir:0:1}"
         local dir="${mydir:3}"
         printf '/%s/%s' "$(echo "$drv" | tr 'A-Z' 'a-z' )" "$dir"
         return
     fi
 
-    printf %s "$mydir"
+    printf '%s' "$mydir"
 }
 
 __git_ps2_pwdmarkup() {
@@ -432,8 +433,7 @@ __git_ps2_pwdmarkup() {
 		if [[ -z "" ]]; then
 			repo_info_top="$(realpath "${repo_info_gitdir%%/.git}")"
 		fi
-		repo_info_top="/${repo_info_top/:/}"
-		repo_info_top="${repo_info_top/\/\///}"
+		repo_info_top="$(__git_ps2_pwdfixup "${repo_info_top}")"
 
 		local path_wc="$(__git_ps2_pwdfixup ${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"})"
 		path_wc="${path_wc%%/.git/**}"
