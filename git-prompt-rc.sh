@@ -37,6 +37,55 @@ if [ -n "$force_color_prompt" ]; then
 	fi
 fi
 
+__fstype() {
+    if [ ! -e "$1" ]; then
+        printf "nxfile,nxfile"
+    else
+        if ! LC_ALL=C df -T "$1" >/dev/null 2>/dev/null; then
+            printf "%s,unknown" "`LC_ALL=C stat -f "$1" 2>/dev/null | awk '/\<Type: /{print $6}'`"
+        else
+            # Detect actual FS type ...
+            printf "%s,%s" "`LC_ALL=C stat -f "$1" 2>/dev/null | awk '/\<Type: /{print $6}' | head -n +2`" "`LC_ALL=C df -P -T "$1" 2>/dev/null | tail -n +2 | awk '{print $2}'`"
+        fi
+    fi
+}
+
+__fstype_isremote() {
+    if [[ "Darwin" == "$(uname -s 2>/dev/null)" ]]; then
+        # MacOSX is simply broken in providing required information/features ... We simply don't care!
+        true
+        return 0
+    fi
+
+    if [ ! -z "$PS1_FORCE_GITPROMPT" ]; then
+        true
+        return 0
+    fi
+
+    local FSTYPE="$(__fstype "$1")"
+    if [[ "$FSTYPE" == "nxfile,nxfile" ]]; then
+        false
+        return 1
+    fi
+
+    if [[ "$FSTYPE" == "fuseblk,unknown" ]]; then
+        false
+        return 1
+    fi
+
+    if [[ "$FSTYPE" == "fuseblk,fuse.sshfs" ]]; then
+        false
+        return 1
+    fi
+
+    if [[ "$FSTYPE" == "nfs,nfs" ]]; then
+        false
+        return 1
+    fi
+
+    true
+}
+
 __gitdir() {
 	if [ -z "${1-}" ]; then
 		if [ -n "${__git_dir-}" ]; then
@@ -110,6 +159,11 @@ __git_ps2() {
 		local color_cyan=""
 		local color_blue=""
 		local color_white=""
+	fi
+
+	if ! __fstype_isremote "$(pwd)" >/dev/null; then
+		printf "`printf "%b%%s%b" "$color_white" "$color_default"`" "{!Remote!}"
+		return
 	fi
 
 	local repo_info_gitdir=$(__gitdir)
