@@ -78,7 +78,17 @@ __fstype_isremote() {
         return 1
     fi
 
-    if [[ "$FSTYPE" == "nfs,nfs" ]]; then
+    if [[ "$FSTYPE" == *",nfs" ]]; then
+        false
+        return 1
+    fi
+
+    if [[ "$FSTYPE" == *",smbfs" ]]; then
+        false
+        return 1
+    fi
+
+    if [[ "$FSTYPE" == "smb2,cifs" ]]; then
         false
         return 1
     fi
