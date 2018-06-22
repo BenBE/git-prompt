@@ -96,6 +96,22 @@ __fstype_isremote() {
     true
 }
 
+__git_ps2_realpath() {
+	if type realpath 2>/dev/null >/dev/null; then
+		realpath "$1"
+		return $?
+	fi
+
+	[ -d "$1" ] && (
+		CDPATH= \cd "$1"
+		/bin/pwd
+	) || (
+		CDPATH= \cd "$(dirname "$1")" &&
+		printf "%s/%s\n" "$(/bin/pwd)" "$(basename $1)"
+	)
+	return 0
+}
+
 __gitdir() {
 	if [ -z "${1-}" ]; then
 		if [ -n "${__git_dir-}" ]; then
@@ -501,11 +517,11 @@ __git_ps2_pwdmarkup() {
 	else
 		local repo_info_top="$(git rev-parse --show-toplevel 2>/dev/null)"
 		if [[ -z "" ]]; then
-			repo_info_top="$(realpath "${repo_info_gitdir%%/.git}")"
+			repo_info_top="$(__git_ps2_realpath "${repo_info_gitdir%%/.git}")"
 		fi
 		repo_info_top="$(__git_ps2_pwdfixup "${repo_info_top}")"
 
-		local path_wc="$(__git_ps2_pwdfixup ${repo_info_top:-"`realpath ${repo_info_gitdir}/..`"})"
+		local path_wc="$(__git_ps2_pwdfixup "${repo_info_top:-"`__git_ps2_realpath ${repo_info_gitdir}/..`"}")"
 		path_wc="${path_wc%%/.git/**}"
 		path_wc="${path_wc%%/.git}"
 
