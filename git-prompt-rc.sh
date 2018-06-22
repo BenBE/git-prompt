@@ -176,7 +176,7 @@ __git_ps2() {
 		return
 	fi
 
-	local repo_info_gitdir=$(__gitdir)
+	local repo_info_gitdir="$(__gitdir)"
 	local repo_info_isgitdir=`git rev-parse --is-inside-git-dir 2>/dev/null`
 	local repo_info_isbare=`git rev-parse --is-bare-repository 2>/dev/null`
 	local repo_info_iswc=`git rev-parse --is-inside-work-tree 2>/dev/null`
