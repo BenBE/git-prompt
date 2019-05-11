@@ -169,23 +169,47 @@ __git_ps2() {
 		return
 	fi
 
-	if [[ $1 -ne 0 ]]; then
-		local color_default="\033[0m"
-		local color_red="\033[1;31m"
-		local color_yellow="\033[1;33m"
-		local color_green="\033[1;32m"
-		local color_cyan="\033[1;36m"
-		local color_blue="\033[1;34m"
-		local color_white="\033[1;37m"
-	else
-		local color_default=""
-		local color_red=""
-		local color_yellow=""
-		local color_green=""
-		local color_cyan=""
-		local color_blue=""
-		local color_white=""
-	fi
+	case "$1" in
+		3)
+			local color_default="\[$(tput sgr0)\]"
+			local color_red="\[$(tput bold; tput setaf 1)\]"
+			local color_yellow="\[$(tput bold; tput setaf 3)\]"
+			local color_green="\[$(tput bold; tput setaf 2)\]"
+			local color_cyan="\[$(tput bold; tput setaf 6)\]"
+			local color_blue="\[$(tput bold; tput setaf 4)\]"
+			local color_white="\[$(tput bold; tput setaf 7)\]"
+			;;
+
+		2)
+			local color_default="$(tput sgr0)"
+			local color_red="$(tput bold; tput setaf 1)"
+			local color_yellow="$(tput bold; tput setaf 3)"
+			local color_green="$(tput bold; tput setaf 2)"
+			local color_cyan="$(tput bold; tput setaf 6)"
+			local color_blue="$(tput bold; tput setaf 4)"
+			local color_white="$(tput bold; tput setaf 7)"
+			;;
+
+		1)
+			local color_default="\033[0m"
+			local color_red="\033[1;31m"
+			local color_yellow="\033[1;33m"
+			local color_green="\033[1;32m"
+			local color_cyan="\033[1;36m"
+			local color_blue="\033[1;34m"
+			local color_white="\033[1;37m"
+			;;
+
+		*)
+			local color_default=""
+			local color_red=""
+			local color_yellow=""
+			local color_green=""
+			local color_cyan=""
+			local color_blue=""
+			local color_white=""
+		;;
+	esac
 
 	if ! __fstype_isremote "$(pwd)" >/dev/null; then
 		printf "`printf "%b%%s%b" "$color_white" "$color_default"`" "{!Remote!}"
@@ -499,15 +523,33 @@ __git_ps2_pwdfixup() {
 }
 
 __git_ps2_pwdmarkup() {
-	if [[ 0 == $1 ]]; then
-		printf %s "$(__git_ps2_pwdtilde "`pwd`")"
-		return
-	fi
+	case "$1" in
+		3)
+			local color_default="\[$(tput sgr0)\]"
+			local color_cyan="\[$(tput bold; tput setaf 6)\]"
+			local color_darkcyan="\[$(tput sgr0; tput setaf 6)\]"
+			local color_blue="\[$(tput bold; tput setaf 4)\]"
+			;;
 
-	local color_default="\033[0m"
-	local color_blue="\033[1;34m"
-	local color_darkcyan="\033[0;36m"
-	local color_cyan="\033[1;36m"
+		2)
+			local color_default="$(tput sgr0)"
+			local color_cyan="$(tput bold; tput setaf 6)"
+			local color_darkcyan="$(tput sgr0; tput setaf 6)"
+			local color_blue="$(tput bold; tput setaf 4)"
+			;;
+
+		1)
+			local color_default="\033[0m"
+			local color_blue="\033[1;34m"
+			local color_darkcyan="\033[0;36m"
+			local color_cyan="\033[1;36m"
+			;;
+
+		*)
+			printf %s "$(__git_ps2_pwdtilde "`pwd`")"
+			return
+			;;
+	esac
 
 	local repo_info_gitdir="$(__gitdir)"
 	if [[ -z "${repo_info_gitdir}" ]]; then
