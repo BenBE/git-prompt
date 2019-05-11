@@ -98,7 +98,7 @@ __fstype_isremote() {
 
 __git_ps2_realpath() {
 	if type realpath 2>/dev/null >/dev/null; then
-		realpath "$1"
+		realpath -s "$1"
 		return $?
 	fi
 
