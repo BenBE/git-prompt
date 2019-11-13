@@ -219,7 +219,7 @@ __git_ps2() {
 	local repo_info_isbare=`git rev-parse --is-bare-repository 2>/dev/null`
 	local repo_info_iswc=`git rev-parse --is-inside-work-tree 2>/dev/null`
 	local repo_info_top=`git rev-parse --show-toplevel 2>/dev/null`
-	local repo_info_submodule=`cd ${repo_info_gitdir}/.. && git rev-parse --is-inside-git-dir`
+	local repo_info_submodule=`cd ${repo_info_gitdir}/.. && git rev-parse --is-inside-git-dir 2>/dev/null`
 
 	local git_wc_branch=""
 #	local git_wc_branch=$(__git_ps2_branch)
