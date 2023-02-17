@@ -594,16 +594,16 @@ __git_prompt_cmd() {
 	UIDCOLOR=2
 	[[ 0 == $UID ]] && UIDCOLOR=1
 
-	PS1="${debian_chroot:+($debian_chroot)}\[$(tput bold; tput setaf ${UIDCOLOR})\]\u@\h\[\033[0m\]:$(__git_prompt 3)\[$(tput sgr0)\]\$ "
+	PS1="$VIRTUAL_ENV_PROMPT${debian_chroot:+($debian_chroot)}\[$(tput bold; tput setaf ${UIDCOLOR})\]\u@\h\[\033[0m\]:$(__git_prompt 3)\[$(tput sgr0)\]\$ "
 }
 
 if [[ "$color_prompt"=="yes" ]]; then
 	UIDCOLOR=32
 	[[ 0 == $UID ]] && UIDCOLOR=31
-	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;'${UIDCOLOR}'m\]\u@\h\[\033[0m\]:\[\0337\]$(__git_prompt 0)\[\0338$(__git_prompt 1)\]\[\033[0m\]\$ '
+	PS1='$VIRTUAL_ENV_PROMPT${debian_chroot:+($debian_chroot)}\[\033[01;'${UIDCOLOR}'m\]\u@\h\[\033[0m\]:\[\0337\]$(__git_prompt 0)\[\0338$(__git_prompt 1)\]\[\033[0m\]\$ '
 	PROMPT_COMMAND="__git_prompt_cmd"
 else
-	PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(__git_ps2 0)\$ '
+	PS1='$VIRTUAL_ENV_PROMPT${debian_chroot:+($debian_chroot)}\u@\h:\w$(__git_ps2 0)\$ '
 fi
 
 unset color_prompt force_color_prompt UIDCOLOR
