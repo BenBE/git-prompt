@@ -158,7 +158,7 @@ __git_ps2_diffstat() {
 	elif [[ "$3" == deletion* ]]; then
 		printf "%d %d %d" "$1" 0 "$2"
 	else
-		printf "%d %d %d" "$1" "$2" "$4"
+		printf "%d %d %d" "$1" "$2" "${4:-0}"
 	fi
 }
 
